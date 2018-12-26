@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.example.org</groupId>
+	<artifactId>cxfSoapWSBootStarter</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>CXFBootStarterSoapWebService</name>
+	<description>Demo CXF Servlet using Spring Boot</description>
+
+	<!-- Boot 1.5.2.RELEASE : ServletRegistrationBean dependency from cxf-spring-boot-starter-jaxws compiled under 1.4.5 settings, causing failure as Class moved from package org.springframework.boot.context.embedded.ServletRegistrationBean to org.springframework.boot.web.servlet.ServletRegistrationBean  -->
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.5.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web-services</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.apache.cxf</groupId>
+    		<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
+    		<version>3.1.10</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+		
+			<plugin>
+			    <groupId>org.apache.cxf</groupId>
+			    <artifactId>cxf-xjc-plugin</artifactId>
+			    <version>3.1.0</version>
+			    <configuration>
+			        <extensions>
+			            <extension>org.apache.cxf.xjcplugins:cxf-xjc-dv:3.1.0</extension>
+			        </extensions>
+			    </configuration>
+			    <executions>
+			        <execution>
+			            <id>generate-sources</id>
+			            <phase>generate-sources</phase>
+			            <goals>
+			                <goal>xsdtojava</goal>
+			            </goals>
+			            <configuration>
+			                <sourceRoot>${basedir}/src/main/java</sourceRoot>
+			                <xsdOptions>
+			                    <xsdOption>
+			                        <xsd>${basedir}/src/main/resources/serviceBean.xsd</xsd> <!--shares a common.xsd file causing the conflicts-->
+			                        <packagename>com.example.services</packagename>
+			                    </xsdOption>			                   
+			                </xsdOptions>
+			            </configuration>
+			        </execution>
+			    </executions>
+			 </plugin>
+		
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>			
+			
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <configuration>
+		          <skipTests>true</skipTests>
+		        </configuration>
+		      </plugin>
+			 
+			 <plugin>
+			 	<groupId>org.apache.cxf</groupId>
+    			<artifactId>cxf-java2ws-plugin</artifactId>
+    			<version>3.1.10</version>
+			 	<executions>
+			 		<execution>
+			 			<id>build-wsdl</id>
+			 			<phase>install</phase>
+			 			<goals>
+			 				<goal>java2ws</goal>
+			 			</goals>
+			 			<configuration>
+			 				<className>com.example.org.HelloServiceImpl</className>
+			 				<!-- <genWsdl>true</genWsdl> -->
+			 				<address>http://localhost:8080/cxfws-services</address>
+			 				<!-- 
+			 				<outputFile>${basedir}/ws/myWebService.wsdl</outputFile> 
+			 				<soap12>true</soap12>			 				
+			 				<serviceName>myWebService</serviceName>
+			 				<portName>wsService</portName> 
+			 				-->
+			 				<verbose>true</verbose>
+			 				<frontend>jaxws</frontend>
+   							<databinding>jaxb</databinding>
+   							<attachWsdl>true</attachWsdl>
+   							<genClient>false</genClient>
+   							<genServer>false</genServer>
+   							<genWrapperbean>false</genWrapperbean>
+   							 
+			 			</configuration>
+			 		</execution>
+			 	</executions>
+			 </plugin>			 
+			
+		</plugins>
+	</build>
+
+
+</project>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.example.org</groupId>
+	<artifactId>boot-aspect-weaving</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>AspectjWeavingWithSpringBoot</name>
+	<description>Aspectj Weaving example using Spring Boot</description>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.6.RELEASE</version>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>		
+		
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.directory.studio</groupId>
+			<artifactId>org.apache.commons.codec</artifactId>
+			<version>1.8</version>
+		</dependency>	
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+		</dependency>
+		
+		<dependency>
+  			<groupId>org.aspectj</groupId>
+  			<artifactId>aspectjrt</artifactId>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<!-- Plugin required to build compile time weaving (CTW) into JavaxClasses -->
+			<!-- Weaving flow explained in below stackoverflow question -->
+			<!-- https://stackoverflow.com/questions/26802394/running-aspectj-causes-nosuchmethoderror-aspect-aspectof -->
+			<plugin>
+        		<groupId>org.codehaus.mojo</groupId>
+        		<artifactId>aspectj-maven-plugin</artifactId>
+        		<version>1.10</version>
+        		<executions>
+          			<execution>
+			            <goals>
+			              <goal>compile</goal>
+			            </goals>
+		          </execution>
+		        </executions>
+		        <configuration>
+			        <complianceLevel>1.8</complianceLevel>
+			        <weaveDependencies>
+	            		<weaveDependency>
+	              			<groupId>javax.servlet</groupId>
+	              			<artifactId>javax.servlet-api</artifactId>
+	            		</weaveDependency>
+	            	</weaveDependencies>
+	                <source>1.8</source>
+	                <target>1.8</target>
+	                <xmlConfigured>src\main\resources\META-INF\aop.xml</xmlConfigured>
+                </configuration>
+      		</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<useSystemClassLoader>false</useSystemClassLoader>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			
+		</plugins>
+	</build>
+
+
+</project>
